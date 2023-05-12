@@ -8,6 +8,12 @@ from django.contrib.auth import logout
 
 
 def home(request):
+    try:
+        user = Detail.objects.get(user=request.user)
+        if(user.bool_abuse == True or user.bool_hate == True):
+            return render(request, 'src_code/warning_page.html')
+    except:
+        return render(request, 'src_code/warning_page.html')
     print("Hellloooo ...", request.user, request.user.username)
     posts = Post.objects.all()
     
@@ -103,7 +109,7 @@ def getMessages(request, receiver):
     name1 = str(str(sender) + str(receiver))
     name2 = str(str(receiver) + str(sender))
     u = Detail.objects.get(user=request.user)
-    if u.bool_abuse == True:
+    if u.bool_hate == True:
         redirect('logout-page')
     
     if Room.objects.filter(room_name=name1).exists():
@@ -428,7 +434,7 @@ def check_message_intention(message):
     abuse_flag = False
     for i in a_lst:
         if i.lower() in abuse_lst:
-            abuse_flag = True
+            hate_flag = True
 
     for i in a_lst:
         if i.lower() in hate_word_lst:
